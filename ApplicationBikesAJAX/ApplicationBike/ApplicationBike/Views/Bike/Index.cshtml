@@ -1,0 +1,85 @@
+﻿@model IEnumerable<ApplicationBike.DomainModel.Bike>
+
+@{
+    ViewBag.Title = "Index";
+}
+
+
+
+
+<div style="margin:30px 0px;">
+    <p>
+        Register Number: <input type="text" id="SearchRegNumber" />
+        Producer: <input type="text" id="SearchProducer" />
+        Colour: <input type="text" id="SearchColour" />
+
+        <input type="button" value="Filter" id="filter" />
+    </p>
+</div>
+
+
+    <table class="table" id="ajaxTable">
+        <thead>
+            <tr>
+                <th>
+                    Register Number
+                </th>
+                <th>
+                    Producer
+                </th>
+                <th>
+                    Model
+                </th>
+                <th>
+                    Colour
+                </th>
+            </tr>
+        </thead>
+    </table>
+
+
+
+    @section scripts{
+        
+        <script>
+
+            function getBikes() {
+                $.ajax({
+                    url: '/Bike/GetBikes',
+                    dataType: "json",
+                    type: "POST",
+                    data: JSON.stringify({
+                        SearchRegNumber: $("#SearchRegNumber").val(),
+                        SearchProducer: $("#SearchProducer").val(),
+                        SearchColour: $("#SearchColour").val()
+                    }),
+                    contentType: 'application/json; charset=utf-8',
+                    async: true,
+                    processData: false,
+                    cache: false,
+                    success: function (data) {
+                        var table = $('#ajaxTable');
+
+                        $("#ajaxTable > tbody").html("");
+
+                        $.each(data, function (i, item) {
+                            table.append("<tr>" +
+                                        "<td>" + item.RegNumber + "<td/>" +
+                                        "<td>" + item.Producer + "<td/>" +
+                                        "<td>" + item.Model + "<td/>" +
+                                        "<td>" + item.Colour + "<td/>" +
+                                        "<tr/>");
+                        });
+                    },
+                    error: function (xhr) {
+                        alert('error');
+                    }
+                });
+            }
+
+            $(document).ready(getBikes);
+
+            $("#filter").click(getBikes);
+
+        </script>
+    }
